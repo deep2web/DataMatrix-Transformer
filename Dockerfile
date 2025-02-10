@@ -4,10 +4,8 @@ FROM python:3.8-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Systempakete aktualisieren und installieren, dann Aufräumen
-RUN sudo apt-get update && \
-    apt-get install -y \
-        libdmtx0t64 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN sudo apt update && \
+sudo apt install -y libdmtx0t64
 
 # Kopieren der requirements und Installation der Python-Abhängigkeiten
 COPY requirements.txt .
