@@ -5,3 +5,4 @@ pylibdmtx==0.*
 treepoem==3.*
 python-magic==0.*
 uvicorn==0.*
+setuptools==75*
