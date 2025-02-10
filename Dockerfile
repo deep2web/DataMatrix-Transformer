@@ -1,13 +1,11 @@
-FROM python:3.8-slim
+FROM python
 
 # Verhindern, dass apt Installationsabfragen stellt
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Systempakete aktualisieren und installieren, dann Aufräumen
-RUN apt-get update && \
-    apt-get install -y \
-        libdmtx0t64 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt update
+RUN apt install -y libdmtx0b
 
 # Kopieren der requirements und Installation der Python-Abhängigkeiten
 COPY requirements.txt .
