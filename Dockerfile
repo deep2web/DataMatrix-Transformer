@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python
 
 # Verhindern, dass apt Installationsabfragen stellt
 ENV DEBIAN_FRONTEND=noninteractive
