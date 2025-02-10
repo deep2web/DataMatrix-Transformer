@@ -1,5 +1,5 @@
 functions-framework==3.*
-Flask==3.*
+fastapi==0.*
 Pillow==11.*
 pylibdmtx==0.*
 treepoem==3.*
