@@ -12,77 +12,75 @@ import treepoem
 
 app = FastAPI()
 
-@app.get("/", response_class=HTMLResponse)
-async def get_html():
-    html_content = """
-    <!DOCTYPE html>
-    <html lang="de">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DataMatrix Transformer</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-          }
-          .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          }
-          h1 {
-            text-align: center;
-            color: #333;
-          }
-          form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-          }
-          input[type="file"] {
-            padding: 10px;
-          }
-          button {
-            padding: 10px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-          }
-          button:hover {
-            background-color: #0056b3;
-          }
-          label {
-            font-weight: bold;
-            color: #555;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>DataMatrix Transformer</h1>
-          <form id="uploadForm" action="/uploadbarcode" method="post" enctype="multipart/form-data">
-            <label for="file">Wähle ein Bild mit einem DataMatrix-Code (PNG, JPG, etc.):</label>
-            <input type="file" id="file" name="file" required>
-            <button type="submit">Hochladen und verarbeiten</button>
-          </form>
-        </div>
-      </body>
-    </html>
-    """
-    return html_content
+@app.api_route("/", methods=["GET","POST"], response_class=HTMLResponse)
+async def combined_route(file: UploadFile = File(None)):
+    if not file:
+        html_content = """
+        <!DOCTYPE html>
+        <html lang="de">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DataMatrix Transformer</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                max-width: 600px;
+                margin: 50px auto;
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+              }
+              h1 {
+                text-align: center;
+                color: #333;
+              }
+              form {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+              }
+              input[type="file"] {
+                padding: 10px;
+              }
+              button {
+                padding: 10px;
+                border: none;
+                background-color: #007BFF;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+              }
+              button:hover {
+                background-color: #0056b3;
+              }
+              label {
+                font-weight: bold;
+                color: #555;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>DataMatrix Transformer</h1>
+              <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+                <label for="file">Wähle ein Bild mit einem DataMatrix-Code (PNG, JPG, etc.):</label>
+                <input type="file" id="file" name="file" required>
+                <button type="submit">Hochladen und verarbeiten</button>
+              </form>
+            </div>
+          </body>
+        </html>
+        """
+        return html_content
 
-
-@app.post("/uploadbarcode")
-async def upload_barcode(file: UploadFile = File(...)):
     file_bytes = await file.read()  # Datei in Bytes laden
 
     # Prüfe, ob es sich um eine Bilddatei handelt
