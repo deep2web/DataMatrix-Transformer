@@ -4,7 +4,7 @@ FROM python:3.8-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Systempakete aktualisieren und installieren, dann Aufräumen
-RUN apt-get update && \
+RUN sudo apt-get update && \
     apt-get install -y \
         libdmtx0t64 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
