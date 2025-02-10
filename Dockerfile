@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Systempakete aktualisieren und installieren, dann Aufräumen
 RUN apt update
-RUN apt install -y libdmtx0t64
+RUN apt install -y libdmtx0b
 
 # Kopieren der requirements und Installation der Python-Abhängigkeiten
 COPY requirements.txt .
