@@ -17,9 +17,9 @@ COPY . /app
 WORKDIR /app
 
 # Startbefehl für die Python-Anwendung
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
 
-CMD ["gunicorn", "--bind", ":8000", "--workers", "1", "--threads", "8", "--timeout", "0", "--worker-class", "uvicorn.workers.UvicornWorker", "main:app"]
+#CMD["gunicorn", "--bind", ":8000", "--workers", "1", "--threads", "8", "--timeout", "0", "--worker-class", "uvicorn.workers.UvicornWorker", "main:app"]
 
 EXPOSE 8000/tcp
 ENV PORT 8000
