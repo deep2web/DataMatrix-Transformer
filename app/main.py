@@ -185,5 +185,4 @@ async def upload_barcode(file: UploadFile = File(...)):
         filename=f"datamatrix_{file.filename}.png"
     )
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=80)
+
