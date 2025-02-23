@@ -127,16 +127,9 @@ async def combined_route(file: UploadFile = File(None)):
     except Exception:
         raise HTTPException(status_code=400, detail="Das hochgeladene Bild konnte nicht geöffnet werden.")
   
-    """# Öffne die Datei mit Pillow
-    try:
-        image = Image.open(io.BytesIO(file_bytes))
-        # pylibdmtx erwartet ein RGB-Bild
-        image = image.convert("RGB")
-    except Exception:
-        raise HTTPException(status_code=400, detail="Das hochgeladene Bild konnte nicht geöffnet werden.")"""
     
     # Verwenden von pylibdmtx zum Auslesen von DataMatrix-Codes
-    decoded_codes = dmtx_decode(gray, max_count=1)
+    decoded_codes = dmtx_decode(gray, max_count=1, shrink=3, threshold=129)
     if not decoded_codes:
         raise HTTPException(status_code=400, detail="Kein DataMatrix-Code im Bild gefunden.")
     
