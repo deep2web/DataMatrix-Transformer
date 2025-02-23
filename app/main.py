@@ -25,6 +25,8 @@ import magic
 from PIL import Image
 from pylibdmtx.pylibdmtx import decode as dmtx_decode
 import treepoem
+import cv2
+import numpy as np
 
 app = FastAPI()
 
@@ -99,8 +101,6 @@ async def combined_route(file: UploadFile = File(None)):
 
     file_bytes = await file.read()  # Datei in Bytes laden
 
-    
-    
     # Rückgabe oder weitere Verarbeitung
     # Prüfe, ob es sich um eine Bilddatei handelt
     if not file.content_type.startswith("image/"):
@@ -116,16 +116,27 @@ async def combined_route(file: UploadFile = File(None)):
     if not server_mime.startswith("image/"):
         raise HTTPException(status_code=400, detail="Die Datei entspricht nicht dem erwarteten Bildformat.")
     
-    # Öffne die Datei mit Pillow
+
+    # Konvertiere die Bytes in ein OpenCV-Bild in Graustufen
+    try:
+      nparr = np.frombuffer(file_bytes, np.uint8)
+      image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+      if image is None:
+          raise ValueError("Bild konnte nicht dekodiert werden")
+      gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Das hochgeladene Bild konnte nicht geöffnet werden.")
+  
+    """# Öffne die Datei mit Pillow
     try:
         image = Image.open(io.BytesIO(file_bytes))
         # pylibdmtx erwartet ein RGB-Bild
         image = image.convert("RGB")
     except Exception:
-        raise HTTPException(status_code=400, detail="Das hochgeladene Bild konnte nicht geöffnet werden.")
+        raise HTTPException(status_code=400, detail="Das hochgeladene Bild konnte nicht geöffnet werden.")"""
     
     # Verwenden von pylibdmtx zum Auslesen von DataMatrix-Codes
-    decoded_codes = dmtx_decode(image)
+    decoded_codes = dmtx_decode(gray, max_count=1)
     if not decoded_codes:
         raise HTTPException(status_code=400, detail="Kein DataMatrix-Code im Bild gefunden.")
     
