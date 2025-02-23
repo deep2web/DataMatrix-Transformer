@@ -17,7 +17,6 @@ along with this program.  If not, see https://www.gnu.org/licenses/
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
-import uvicorn
 import os
 import tempfile
 import io
@@ -89,7 +88,7 @@ async def combined_route(file: UploadFile = File(None)):
               <h1>DataMatrix Transformer</h1>
               <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
                 <label for="file">Wähle ein Bild mit einem DataMatrix-Code (PNG, JPG, etc.):</label>
-                <input type="file" id="file" name="file" required>
+                <input type="file" id="file" name="file" accept="image/*" required>
                 <button type="submit">Hochladen und verarbeiten</button>
               </form>
             </div>
@@ -100,49 +99,7 @@ async def combined_route(file: UploadFile = File(None)):
 
     file_bytes = await file.read()  # Datei in Bytes laden
 
-    # Prüfe, ob es sich um eine Bilddatei handelt
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Es können nur Bilddateien verarbeitet werden.")
-
-    # Prüfe die Dateierweiterung
-    valid_extensions = ['.png', '.jpg', '.jpeg', '.bmp', '.gif']
-    if not any(file.filename.lower().endswith(ext) for ext in valid_extensions):
-        raise HTTPException(status_code=400, detail="Ungültige Dateierweiterung. Erlaubt sind: .png, .jpg, .jpeg, .bmp, .gif")
-
-    # Serverseitige Überprüfung des MIME-Typs mittels python-magic
-    server_mime = magic.from_buffer(file_bytes, mime=True)
-    if not server_mime.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Die Datei entspricht nicht dem erwarteten Bildformat.")
-
-    # Öffne die Datei mit Pillow
-    try:
-        image = Image.open(io.BytesIO(file_bytes))
-        # pylibdmtx erwartet ein RGB-Bild
-        image = image.convert("RGB")
-    except Exception:
-        raise HTTPException(status_code=400, detail="Das hochgeladene Bild konnte nicht geöffnet werden.")
-
-    # Verwenden von pylibdmtx zum Auslesen von DataMatrix-Codes
-    decoded_codes = dmtx_decode(image)
-    if not decoded_codes:
-        raise HTTPException(status_code=400, detail="Kein DataMatrix-Code im Bild gefunden.")
-
-    # Verwende den ersten gefundenen DataMatrix-Code
-    barcode_data = decoded_codes[0].data
-
-    try:
-        # Erzeuge mit treepoem einen neuen DataMatrix-Code im rechteckigen Format
-        dt_barcode = treepoem.generate_barcode(
-            barcode_type='datamatrix',
-            data=barcode_data,
-            options={
-                'format': 'rectangle',  # Erzwingt ein rechteckiges Format
-                'columns': 48,          # Anzahl der Spalten (Breite)
-            }
-        )
-        # Weitere Verarbeitung ...
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    
     
     # Rückgabe oder weitere Verarbeitung
     # Prüfe, ob es sich um eine Bilddatei handelt
